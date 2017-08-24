@@ -87,7 +87,7 @@ var proxyFileCache = new Map();
 
 function proxy(filePath) {
   if (!(filePath in proxyFilePathToURL))
-    return null;
+    return null;  
   if (localProtocolPath && filePath === '/front_end/InspectorBackendCommands.js')
     return serveLocalProtocolFile();
   if (process.env.CHROMIUM_COMMIT)
@@ -131,10 +131,13 @@ function proxy(filePath) {
   }
 
   function onMissingFile() {
-    var isFullCheckout = utils.shellOutput('git config --get remote.origin.url') ===
-        'https://chromium.googlesource.com/chromium/src.git';
+    //Because I'm committing this as a fork of the devtools it itself contains it's own git folder
+    //hence running git from the current directory would cause it to pick up the wrong remote origin
+    let gitDir = "--git-dir=../../../../.git"; //using relative path based on my chromium checkout
+
+    var isFullCheckout = utils.shellOutput(`git ${gitDir} config --get remote.origin.url`) === 'https://chromium.googlesource.com/chromium/src.git';
     var earlierCommitHash;
-    var gitLogCommand = `git log --max-count=1 --grep="Commit-Position" --before="12 hours ago"`;
+    var gitLogCommand = `git ${gitDir} log --max-count=1 --grep="Commit-Position" --before="12 hours ago"`;
     if (isFullCheckout) {
       earlierCommitHash = utils.shellOutput(`${gitLogCommand} --pretty=format:"%H"`);
     } else {
