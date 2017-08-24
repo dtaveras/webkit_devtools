@@ -137,7 +137,7 @@ function proxy(filePath) {
 
     var isFullCheckout = utils.shellOutput(`git ${gitDir} config --get remote.origin.url`) === 'https://chromium.googlesource.com/chromium/src.git';
     var earlierCommitHash;
-    var gitLogCommand = `git ${gitDir} log --max-count=1 --grep="Commit-Position" --before="12 hours ago"`;
+    var gitLogCommand = `git ${gitDir} log --max-count=1 --grep="Commit-Position"`;
     if (isFullCheckout) {
       earlierCommitHash = utils.shellOutput(`${gitLogCommand} --pretty=format:"%H"`);
     } else {
